@@ -13,11 +13,12 @@ def loadCsvData(filePath, headerSkips=1, type=int):
      Returns:
         array
     """
+
     return genfromtxt(filePath,
                       delimiter=',', skip_header=headerSkips, dtype=type)
 
 
-def displayImage(img, label, dimentions=(28, 28), predicted=""):
+def displayImage(img, label, dimentions=(32, 32), predicted=""):
     """Display a DataImage """
     label = str(label)
     predicted = str(predicted)
@@ -31,7 +32,3 @@ def displayImage(img, label, dimentions=(28, 28), predicted=""):
 
 def loadChars():
     return loadCsvData("dataset/chars.csv", 0)
-
-
-def loadNums():
-    return loadCsvData("dataset/nums.csv", 0)

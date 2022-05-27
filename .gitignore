@@ -1,3 +1,9 @@
 .venv
 __pycache__
 yolo-model
+dataset/dataset
+dataset/test
+dataset/data
+dataset/training
+.vscode
+dataset/chars.csv
