@@ -7,7 +7,7 @@ from pretretment import *
 
 def imagePretreatment(image):
     # this is for the original database
-    #resizedImage = imageResize(image)
+    # resizedImage = imageResize(image)
     # return resizedImage
     # this is pretretment for test db
     cleanedImage = imageClean(image)
