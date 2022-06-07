@@ -10,7 +10,7 @@ size = (32, 32)
 
 clf = util.decompress_pickle("svm/model_dumps/svm_model.pbz2")
 
-testFolder = "dataset/test"
+testFolder = "/home/pandakin/dev/ocr-moroccan-plates/xgboostAndRF/testing"
 
 
 directoryArray = pt.readChars(testFolder)
