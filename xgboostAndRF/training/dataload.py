@@ -1,17 +1,3 @@
-#add this script before you start execution in colab
-"""from google.colab import drive
-drive.mount("/content/drive")"""
-#arborescence google drive in colab
-"""
----drive
-        |---MyDrive
-            |---AI
-                |---models
-                |---train
-                    |---chars.csv
-                    |---nums.csv
-"""
-#
 from numpy import genfromtxt
 import matplotlib.pyplot as plt
 import csv
@@ -34,7 +20,3 @@ def displayImage(img, label, dimentions=(28, 28), predicted=""):
 
 def loadChars():
     return loadCsvData("/content/drive/MyDrive/AI/train/chars.csv", 0)
-
-
-def loadNums():
-    return loadCsvData("/content/drive/MyDrive/AI/train/nums.csv", 0)
