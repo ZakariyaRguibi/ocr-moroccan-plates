@@ -11,6 +11,7 @@ drive.mount("/content/drive")"""
                     |---chars.csv
                     |---nums.csv
 """
+#
 from numpy import genfromtxt
 import matplotlib.pyplot as plt
 import csv
