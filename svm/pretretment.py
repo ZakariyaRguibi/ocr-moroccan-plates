@@ -6,15 +6,18 @@ from sklearn.preprocessing import binarize
 import matplotlib.pyplot as plt
 import csv
 
-
-def imagePretreatment(imagePath):
-    myImage = getImage(imagePath)
-    cleanedImage = imageClean(myImage)
+def pretreatment(myImage):
+    gray = cv2.cvtColor(myImage, cv2.COLOR_BGR2GRAY)
+    cleanedImage = imageClean(gray)
     resizedImage = imageResize(cleanedImage)
     imageBinarized = imageBinarize(resizedImage)
     invertedImage = invertBW(imageBinarized)
-    thinnedImage = imageThin(invertedImage)
-    return thinnedImage
+    #thinnedImage = imageThin(invertedImage)
+    return invertedImage
+
+def imagePretreatment(imagePath):
+    myImage = getImage(imagePath)
+    return pretreatment(myImage)
 
 
 def imageResize(image):
@@ -23,10 +26,16 @@ def imageResize(image):
     return output
 
 
+
+
+
+
 def imageBinarize(image):
     # imgf contains Binary image
     return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 2)
-
+    
+    #fixed thresholding 180
+    #return  cv2.threshold(image, 180, 255,cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
 def imageThin(image):
     kernel = np.ones((2, 2), np.uint8)
@@ -40,8 +49,7 @@ def imageClean(image):
 def getImage(imagePath):
     # read an image from a path and convert it to grayscale
     image = cv2.imread(imagePath)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    return gray
+    return image
 
 
 def imageToArray(image):

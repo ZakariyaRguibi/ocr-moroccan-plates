@@ -23,30 +23,49 @@ def preprocess_image(image_path, resize=False):
     return img
 
 
-def myFoo():
-    # testing only
-    image_path = "/home/pandakin/Desktop/123.png"
-    LpImg = [preprocess_image(image_path)]
+def exportImage(image, destination, filename):
+    cv2.imwrite(destination + filename, image)
 
-    if True:  # (len(LpImg)): #Vérifier si qu'une plaque au moins est bien détectée
 
-        # Convertir le résultat sur un échelle de 8 bits
-        plate_image = cv2.convertScaleAbs(LpImg[0], alpha=(255.0))
+def exportImageArrays(imageArray, folder, id=""):
+    index = 0
+    for image in imageArray:
+        image = (image*255).astype(np.uint8)
+        exportImage(image, folder, id+str(index)+".jpg")
+        index = index + 1
 
-        # Convertir l'image en un gradient de couleur grise
-        gray = cv2.cvtColor(plate_image, cv2.COLOR_BGR2GRAY)
 
-        # Appliquer un lissage gaussien
-        blur = cv2.GaussianBlur(gray, (7, 7), 0)
+def cutContours(image, contourArray):
+    # returns an array of cutted images
+    cutContours = []
+    for box in contourArray:
+        (x, y, w, h) = box[0], box[1], box[2], box[3]
+        cutContours.append(image[y:y+h, x:x+w])
+    return cutContours
 
-        # Appliquer un treshold de 180
-        binary = cv2.threshold(blur, 180, 255,
-                               cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
-        # Appliquer la dilatation
-        kernel3 = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-        thre_mor = cv2.morphologyEx(binary, cv2.MORPH_DILATE, kernel3)
+def imagePreTretment(image):
+    # Convertir le résultat sur un échelle de 8 bits
+    plate_image = cv2.convertScaleAbs(image, alpha=(255.0))
 
+    # Convertir l'image en un gradient de couleur grise
+    gray = cv2.cvtColor(plate_image, cv2.COLOR_BGR2GRAY)
+
+    # Appliquer un lissage gaussien
+    blur = cv2.GaussianBlur(gray, (7, 7), 0)
+
+    # Appliquer un treshold de 180
+    binary = cv2.threshold(blur, 180, 255,
+                           cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+
+    # Appliquer la dilatation
+    kernel3 = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    thre_mor = cv2.morphologyEx(binary, cv2.MORPH_DILATE, kernel3)
+    plotImages(plate_image, gray, blur, binary, thre_mor)
+    return thre_mor
+
+
+def plotImages(plate_image, gray, blur, binary, thre_mor):
     # visualiser les résultats des différents étapes
     fig = plt.figure(figsize=(12, 7))
     plt.rcParams.update({"font.size": 18})
@@ -63,44 +82,42 @@ def myFoo():
             plt.imshow(plot_image[i])
         else:
             plt.imshow(plot_image[i], cmap="gray")
-
-    # Détecter l'ensemble des contours dans l'image sous la forme Bounding Box
-    cont, _ = cv2.findContours(
-        binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    # Créer une copie de l'image pour dessiner les contours
-    test_plat = plate_image.copy()
-
-    # Initialiser une liste qui va contenir les contours des caractères
-    crop_characters = []
-
-    # définir la longeur et largeur standarisées des caractères
-    digit_w, digit_h = 30, 60
-
-    for c in sort_contours(cont):
-        (x, y, w, h) = cv2.boundingRect(c)
-        ratio = h/w
-
-        # Ne selectionner que les contours avec le ratio défini
-        if 1 <= ratio <= 8:
-
-            # Ne selectionner que les contours dont la longeur occupe 20% de la largeur de l'image de la plaque
-            if h/plate_image.shape[0] >= 0.5:
-
-                # Dessiner les rectangles autour des caractères détectés
-                cv2.rectangle(test_plat, (x, y),
-                              (x + w, y + h), (0, 255, 0), 2)
-                curr_num = thre_mor[y:y+h, x:x+w]
-                curr_num = cv2.resize(curr_num, dsize=(digit_w, digit_h))
-                _, curr_num = cv2.threshold(
-                    curr_num, 220, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-                crop_characters.append(curr_num)
-
-    print("Detect {} letters...".format(len(crop_characters)))
-    fig = plt.figure(figsize=(10, 6))
-    plt.axis(False)
-    plt.imshow(test_plat)
     plt.show()
 
 
-myFoo()
+def showBondingboxes(myImage, bounding):
+    image =myImage.copy()
+    for box in bounding:
+        (x, y, w, h) = box[0], box[1], box[2], box[3]
+        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    fig = plt.figure(figsize=(10, 6))
+    plt.axis(False)
+    plt.imshow(image)
+    plt.show()
+
+
+def findLetters(image_path):
+    myImage = preprocess_image(image_path)
+    thre_mor = imagePreTretment(myImage)
+    # Détecter l'ensemble des contours dans l'image sous la forme Bounding Box
+    cont, _ = cv2.findContours(
+        thre_mor, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Initialiser une liste qui va contenir les contours des caractères
+    bondingBox = []
+    for c in sort_contours(cont):
+        (x, y, w, h) = cv2.boundingRect(c)
+        ratio = h/w
+        # Ne selectionner que les contours avec le ratio défini
+        if 0.5 <= ratio <= 8:
+            # Ne selectionner que les contours dont la longeur occupe 20% de la largeur de l'image de la plaque
+            if h/myImage.shape[0] >= 0.2:
+                bondingBox.append([x, y, w, h])
+    print("Detect {} letters...".format(len(bondingBox)))
+    # show image with rectangles
+    showBondingboxes(myImage, bondingBox)
+
+    return cutContours(myImage, bondingBox)
+
+
+#image_path = "/home/pandakin/Desktop/9.jpg"
+#letters = findLetters(image_path)

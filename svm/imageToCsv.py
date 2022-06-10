@@ -1,7 +1,10 @@
 import csv
 import os
+
 import numpy as np
 from PIL import Image
+import sys
+
 from pretretment import *
 
 
@@ -10,7 +13,8 @@ def imagePretreatment(image):
     # resizedImage = imageResize(image)
     # return resizedImage
     # this is pretretment for test db
-    cleanedImage = imageClean(image)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    cleanedImage = imageClean(gray)
     resizedImage = imageResize(cleanedImage)
     imageBinarized = imageBinarize(resizedImage)
     invertedImage = invertBW(imageBinarized)
@@ -25,16 +29,23 @@ def getImageArray(imagePath):
     return imageArray
 
 
+def readFolder(dirPath, foldername=""):
+    charArray = []
+    for file in os.listdir(dirPath):
+        currentImage = os.path.join(dirPath, file)
+        imageArray = [foldername]
+        imageArray.extend(getImageArray(currentImage))
+        charArray.append(imageArray)
+    return charArray
+
+
 def readChars(directory):
     charArray = []
     for foldername in os.listdir(directory):
         dirPath = os.path.join(directory, foldername)
         if os.path.isdir(dirPath):
-            for file in os.listdir(dirPath):
-                currentImage = os.path.join(dirPath, file)
-                imageArray = [foldername]
-                imageArray.extend(getImageArray(currentImage))
-                charArray.append(imageArray)
+            imageArray = readFolder(dirPath, foldername)
+        charArray.extend(imageArray)
     return charArray
 
 
