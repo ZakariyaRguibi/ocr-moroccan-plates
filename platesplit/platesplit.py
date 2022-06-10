@@ -61,12 +61,12 @@ def imagePreTretment(image):
     # Appliquer la dilatation
     kernel3 = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     thre_mor = cv2.morphologyEx(binary, cv2.MORPH_DILATE, kernel3)
-    plotImages(plate_image, gray, blur, binary, thre_mor)
+    #plotImages(plate_image, gray, blur, binary, thre_mor)
     return thre_mor
 
 
 def plotImages(plate_image, gray, blur, binary, thre_mor):
-    # visualiser les résultats des différents étapes
+    # visualiser les résultats des différents étapes de pretretment
     fig = plt.figure(figsize=(12, 7))
     plt.rcParams.update({"font.size": 18})
     grid = gridspec.GridSpec(ncols=2, nrows=3, figure=fig)
