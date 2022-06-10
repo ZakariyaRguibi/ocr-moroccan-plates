@@ -9,7 +9,8 @@ import csv
 def pretreatment(myImage):
     gray = cv2.cvtColor(myImage, cv2.COLOR_BGR2GRAY)
     cleanedImage = imageClean(gray)
-    resizedImage = imageResize(cleanedImage)
+    imagewithBorder= imageBorder(cleanedImage)
+    resizedImage = imageResize(imagewithBorder)
     imageBinarized = imageBinarize(resizedImage)
     invertedImage = invertBW(imageBinarized)
     #thinnedImage = imageThin(invertedImage)
@@ -19,6 +20,20 @@ def imagePretreatment(imagePath):
     myImage = getImage(imagePath)
     return pretreatment(myImage)
 
+def imageBorder(image,percentage=0.2):
+    #add 20% white borders to each side of the image
+    height, width = image.shape
+    white = [255,255,255]
+    outputImage = cv2.copyMakeBorder(
+                 image, 
+                 int(height*percentage), 
+                 int(height*percentage), 
+                 int(width*percentage), 
+                 int(width*percentage), 
+                 cv2.BORDER_CONSTANT, 
+                 value=white
+              )
+    return outputImage
 
 def imageResize(image):
     desiredSize = (32, 32)
@@ -32,10 +47,10 @@ def imageResize(image):
 
 def imageBinarize(image):
     # imgf contains Binary image
-    return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 2)
+    #return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 2)
     
     #fixed thresholding 180
-    #return  cv2.threshold(image, 180, 255,cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    return  cv2.threshold(image, 180, 255,cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
 def imageThin(image):
     kernel = np.ones((2, 2), np.uint8)
