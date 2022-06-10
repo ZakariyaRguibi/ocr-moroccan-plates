@@ -14,7 +14,7 @@ import svm.dataload as dl
 import numpy as np
 import svm.utils as util
 import svm.imageToCsv as pt
-from platesplit.platesplit import findLetters
+from platesplit import findLetters
 from svm.pretretment import pretreatment, imageToArray
 
 
@@ -38,4 +38,4 @@ def predict(plateImagePath):
 
 
 
-predict("/home/pandakin/dev/ocr-moroccan-plates/dataset/test/plates/plat3.png")
+predict("/home/pandakin/dev/ocr-moroccan-plates/dataset/test/plates/plate1.png")

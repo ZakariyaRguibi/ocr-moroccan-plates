@@ -1,4 +1,5 @@
 import os
+from re import A
 import sys
 
 
@@ -14,12 +15,24 @@ import svm.dataload as dl
 import numpy as np
 import svm.utils as util
 import svm.imageToCsv as pt
-from platesplit.platesplit import findLetters
+from platesplit import findLetters
 from svm.pretretment import pretreatment, imageToArray
 
 
-
-
+def formatPrediction(predictionArray):
+    for i in range(0,len(predictionArray)):
+        if predictionArray[i]>9:
+            if predictionArray[i]==10:
+                predictionArray[i]="A"
+            elif predictionArray[i]==11:
+                predictionArray[i]="B"
+            elif predictionArray[i]==12:
+                predictionArray[i]="D"
+            elif predictionArray[i]==13:
+                predictionArray[i]="W"
+            elif predictionArray[i]==14:
+                predictionArray[i]="H"
+                
 def predict(plateImagePath):
     # load model
     clf = util.decompress_pickle("xgboostAndRF/models/XGBoost_model.pbz2")
