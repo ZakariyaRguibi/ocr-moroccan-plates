@@ -1,7 +1,4 @@
 # %%
-"""
-    image should be in the same directory of the notebook
-"""
 def deetctAndCropt(image_name):
     
     import os   
