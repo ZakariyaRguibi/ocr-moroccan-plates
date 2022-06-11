@@ -169,7 +169,7 @@ def deetctAndCropt(image_name):
     cv2.imwrite(SAVE_IMAGE_PATH, image)
 
     
-deetctAndCropt(r"C:\Users\Administrator\Pictures\Camera Roll\1.jpeg") 
+deetctAndCropt(r"chemin ") 
 
 
 
