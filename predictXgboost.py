@@ -32,7 +32,8 @@ def formatPrediction(predictionArray):
                 predictionArray[i]="W"
             elif predictionArray[i]==14:
                 predictionArray[i]="H"
-                
+    return predictionArray
+
 def predict(plateImagePath):
     # load model
     clf = util.decompress_pickle("xgboostAndRF/models/XGBoost_model.pbz2")
@@ -47,8 +48,9 @@ def predict(plateImagePath):
         imageArray = np.array([letter])
         #dl.displayImage(imageArray[0], "", size, y_pred[0]).
         predictionResult.append( y_pred[0])
-    print(str(predictionResult))
+    return "".join(map(str, formatPrediction(predictionResult)))
 
 
 
-predict("/home/pandakin/dev/ocr-moroccan-plates/dataset/test/plates/plat3.png")
+result = predict("/home/pandakin/dev/ocr-moroccan-plates/dataset/test/plates/plat3.png")
+print(result)
